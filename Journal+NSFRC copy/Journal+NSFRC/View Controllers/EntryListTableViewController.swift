@@ -13,6 +13,7 @@ class EntryListTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        EntryController.sharedInstance.fetchedResultsController.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -36,6 +37,7 @@ class EntryListTableViewController: UITableViewController {
         cell.textLabel?.text = entry.title
         cell.detailTextLabel?.text = formattedEntryDate
         
+        
         // Configure the cell...
         
         return cell
@@ -48,7 +50,7 @@ class EntryListTableViewController: UITableViewController {
         if editingStyle == .delete {
             guard let entry = EntryController.sharedInstance.fetchedResultsController.fetchedObjects?[indexPath.row] else {return}
             EntryController.sharedInstance.deleteEntry(entry:entry)
-            tableView.deleteRows(at: [indexPath], with: .fade)
+//            tableView.deleteRows(at: [indexPath], with: .fade)
         }
     }
     
@@ -97,18 +99,22 @@ extension EntryListTableViewController: NSFetchedResultsControllerDelegate {
             guard let newIndexPath = newIndexPath
                 else { return }
             tableView.insertRows(at: [newIndexPath], with: .fade)
+        
         case .delete:
             guard let indexPath = indexPath
                 else { return }
             tableView.deleteRows(at: [indexPath], with: .fade)
+        
         case .update:
             guard let indexPath = indexPath
                 else { return }
             tableView.reloadRows(at: [indexPath], with: .none)
+        
         case .move:
             guard let indexPath = indexPath, let newIndexPath = newIndexPath
                 else { return }
             tableView.moveRow(at: indexPath, to: newIndexPath)
+        
         @unknown default:
             fatalError("NSFetchedResultsChangeType has new unhandled cases")
         }
